@@ -1,28 +1,29 @@
-# ResearchMind Skills
+# ResearchMind Agent Skills
 
-ResearchMind 的九个 Agent Skills 集中存放在 `.agents/skills/`。每个目录包含 `SKILL.md`、参考资料、执行脚本和 ResearchMind 运行包版本清单。
+九个独立 Skill 位于 `.agents/skills/`。将所需的完整目录复制到 Agent 宿主的技能目录，即可让 Agent 读取 `SKILL.md` 和对应工作流。宿主需要支持读取 Skill 并执行 Python 命令。
 
-| 领域 | Skills |
-| --- | --- |
-| 文献 | `literature-search`、`paper-analysis`、`research-report`、`literature-knowledge` |
-| 材料数据库 | `materials-search` |
-| 仿真 | `crystal-generation`、`structure-optimization`、`phonon-analysis`、`thermal-conductivity` |
+| 任务 | Skill | 入口示例 |
+| --- | --- | --- |
+| 文献检索与导出 | [literature-search](.agents/skills/literature-search/SKILL.md) | `python scripts/search_papers.py --help` |
+| 读取与分析论文 | [paper-analysis](.agents/skills/paper-analysis/SKILL.md) | `python scripts/analyze_paper.py --help` |
+| 研究报告 | [research-report](.agents/skills/research-report/SKILL.md) | `python scripts/write_report.py --help` |
+| 文献语义检索 | [literature-knowledge](.agents/skills/literature-knowledge/SKILL.md) | `python scripts/search_knowledge.py --help` |
+| 材料数据库查询 | [materials-search](.agents/skills/materials-search/SKILL.md) | `python scripts/search_materials.py --help` |
+| 晶体生成 | [crystal-generation](.agents/skills/crystal-generation/SKILL.md) | `python scripts/generate_crystals.py --help` |
+| 能量与弛豫 | [structure-optimization](.agents/skills/structure-optimization/SKILL.md) | `python scripts/relax_structure.py --help` |
+| 声子谱 | [phonon-analysis](.agents/skills/phonon-analysis/SKILL.md) | `python scripts/calculate_phonon.py --help` |
+| 热导率 | [thermal-conductivity](.agents/skills/thermal-conductivity/SKILL.md) | `python scripts/predict_conductivity.py --help` |
 
-## 使用
+## 直接运行
 
-1. 克隆本仓库并从该目录打开支持 `.agents/skills/` 的 Agent，或把所需的完整 Skill 目录复制到 Agent 宿主的技能目录。
-2. 若走脚本或 CLI 路径，在 Agent 实际执行命令的 Python 3.11+ 环境中安装配套运行包。下面的命令需要 Git，并固定到与这些 Skill 匹配的源码提交。
+在相应 Skill 目录用 Python 3.11 或 3.12 安装 `requirements.txt`，然后按 `SKILL.md` 的命令运行。也可以从任意工作目录用绝对路径调用脚本。业务代码随每个目录一起分发，运行入口是普通 Python 脚本。文献清单、CIF 和结果文件通过显式路径在 Skill 之间传递。
 
-   ```sh
-   python -m pip install "researchmind-skills @ git+https://github.com/crjia111/ResearchMind2.0.git@e667d3f5d6ca1c775290bc9326c2a49f20208f4b#subdirectory=packages/researchmind-skills"
-   ```
+```bash
+cd .agents/skills/materials-search
+python -m pip install -r requirements.txt
+python scripts/search_materials.py --formula Si --sources cod oqmd aflow --limit 2 --out-dir ./silicon
+```
 
-3. 在仓库根目录运行检查。根据目标能力配置 Python 可选依赖、第三方凭据或本地模型。按需将安装命令中的包名改为 `researchmind-skills[paper]`、`researchmind-skills[vector]`、`researchmind-skills[database]` 或 `researchmind-skills[simulation]`。
+执行成功时 stdout 输出一份 JSON 摘要，日志写到 stderr。成功和无记录返回 0，部分成功返回 3，全部失败返回 1，参数语法错误由 argparse 返回 2。使用 `--help` 查看每个入口的参数。对于多次运行，使用不同的输出目录或以本次结果清单引用的文件为准。
 
-   ```sh
-   python -m researchmind_skills doctor --skill literature-search --target .agents/skills
-   ```
-
-支持原生函数工具的宿主可由维护者绑定同一运行包的 Python API。已经绑定相应工具的 Agent 可以通过宿主调用，环境检查也由宿主或维护者完成。首次提供的框架适配为 AgentScope。
-
-Skill 快照来自 [ResearchMind2.0 的迁移提交](https://github.com/crjia111/ResearchMind2.0/commit/e667d3f5d6ca1c775290bc9326c2a49f20208f4b)，对应运行包 `0.1.0`。更新 Skill 时，请同步核对脚本和清单中的运行包版本。有关可选依赖和模型配置，请参阅[运行包文档](https://github.com/crjia111/ResearchMind2.0/blob/e667d3f5d6ca1c775290bc9326c2a49f20208f4b/docs/portable-skills.md)。
+模型及校验值见 [模型说明](docs/models.md)。旧工具到新入口的对应关系见 [迁移表](docs/legacy-capabilities.md)。真实测试结果见 [验收记录](docs/verification.md)。开发环境可在仓库根目录运行 `python -m unittest discover -s tests`。

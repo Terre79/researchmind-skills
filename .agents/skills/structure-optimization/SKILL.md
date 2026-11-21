@@ -1,26 +1,19 @@
 ---
 name: structure-optimization
-description: 对输入晶体进行单点能量评估，或在用户要求时进行结构弛豫。
+description: 对指定 CIF 用 MatterSim 计算结构能量和原子受力，或进行几何弛豫并导出 CIF。适用于比较已给结构和获得弛豫后的候选。
 ---
 
-对输入晶体进行单点能量评估，或在用户要求时进行结构弛豫。
+在本 Skill 目录使用 Python 3.11 或 3.12 安装依赖。
 
-执行流程：校验 CIF → 判断单点/弛豫意图 → 检查 MatterSim 权重 → 计算 → 保存真实结果及新结构。
+```bash
+python -m pip install -r requirements.txt
+```
 
-边界：只算能量时输入结构保持不变，不隐式调用弛豫；未配置模型时明确失败。
+参阅 [模型准备](references/model.md)。给了 CIF 后先用 `validate_cif.py` 确认可解析。单点能用 `calculate_energy.py`，想降低原子受力时用 `relax_structure.py`。默认固定晶胞；用户需要优化晶胞时加 `--relax-cell`。
 
-先检查本地环境：运行 researchmind-skills doctor --skill structure-optimization --target <技能根目录>。缺依赖、密钥、模型或执行权限时报告缺项，不自行安装或下载。
+```bash
+python scripts/calculate_energy.py --input ./si.cif --model-path ./models/mattersim-v1.0.0-1M.pth --out-dir ./energy
+python scripts/relax_structure.py --input ./si.cif --model-path ./models/mattersim-v1.0.0-1M.pth --fmax 0.03 --out-dir ./relaxed
+```
 
-使用宿主已绑定的等价原生工具；没有原生工具时运行：
-python "<本技能绝对目录>/scripts/run.py" run <能力编号> --input-file <UTF-8 JSON 文件> --workspace <授权工作目录> --wait --output-format json
-
-只使用下列能力：
-- simulation.validate_cif
-- simulation.energy
-- simulation.relax
-
-按需读取 [参数说明](references/parameters.md) 和 [结果说明](references/outputs.md)。参数采用能力注册表 Schema；可用 researchmind-skills capabilities describe <能力编号> --output-format json 查询，不猜测工具别名。
-
-检查 status 和 error。accepted 只是已提交，需继续通过 jobs status/result 查询；partial 必须报告逐项失败。优先复用同 workspace/会话内的 artifact_id 和 job_id，避免重新检索或计算。重试使用相同 request_id；不同请求不可复用该 ID。读取技能不自动注册工具或赋予权限。
-
-日志在 stderr，stdout 的一个 JSON 对象才是执行结果；输出路径和第三方凭据来自宿主或本地配置。共享 CIF 校验、CSV 导出、分段读取通过相同运行层执行，无需 MCP。
+检查能量和力的单位、`converged`、前后最大原子受力及 `relaxed.cif`。总能量是势模型的预测。凸包或热力学稳定性需要额外的统一基准数据和验证。

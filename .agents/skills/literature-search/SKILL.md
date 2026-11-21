@@ -1,37 +1,26 @@
 ---
 name: literature-search
-description: 按主题或作者检索、导入和筛选论文，生成供后续分析使用的文献集合。
+description: 按主题、作者或 arXiv ID 检索文献，导入本地论文，筛选、选择和导出文献清单。适用于找论文、整理检索结果或生成检索计划。
 ---
 
-按主题或作者检索、导入和筛选论文，生成供后续分析使用的文献集合。
+## 选择检索方式
 
-执行流程：理解主题 → 选择 arXiv/Tavily/Semantic Scholar → 检索与去重 → 保存集合与 CSV。
+- 用户给主题或 arXiv ID 时运行 `scripts/search_papers.py`。arXiv 适合预印本；如需扩展覆盖，加入 Semantic Scholar。混合来源时保留来源标签，合并前核对 DOI、URL 或论文 ID。
+- 用户给作者时运行 `scripts/search_by_author.py`；检查作者和研究方向，避免把同名作者的论文合在一起。
+- 给了本地 PDF、DOCX、HTML 或文本时运行 `scripts/import_papers.py`。给了已有清单时直接运行 `scripts/filter_papers.py`，可按主题或论文 ID 筛选。
+- 用户明确要新闻或网页时使用 `--mode news` 或 `--mode general`，需要 `TAVILY_API_KEY`。网页摘要应标成网页证据。
 
-边界：只要求找论文时不自动分析或写报告；已有集合满足要求时优先复用。
+## 执行
 
-先检查本地环境：运行 researchmind-skills doctor --skill literature-search --target <技能根目录>。缺依赖、密钥、模型或执行权限时报告缺项，不自行安装或下载。
+```bash
+python scripts/search_papers.py --query "all:perovskite" --sources arxiv --limit 5 --out-dir ./literature
+python scripts/search_by_author.py --author "Shoucheng Zhang" --limit 3 --out-dir ./by-author
+python scripts/filter_papers.py --input ./literature/papers.json --topic "all:perovskite" --out-dir ./selected
+python scripts/export_csv.py --input ./selected/papers.json --output ./selected/references.csv
+```
 
-使用宿主已绑定的等价原生工具；没有原生工具时运行：
-python "<本技能绝对目录>/scripts/run.py" run <能力编号> --input-file <UTF-8 JSON 文件> --workspace <授权工作目录> --wait --output-format json
+arXiv 查询、筛选与 CSV 导出可直接用标准库执行。解析已下载的 PDF 或 DOCX 时，安装 `requirements.txt`。要生成检索计划，使用 `scripts/plan_search.py --query … --out-dir …`，配置 `OPENAI_API_KEY`、`MODEL_USE`，可用 `OPENAI_BASE_URL` 指向兼容服务。
 
-只使用下列能力：
-- papers.list
-- papers.topics
-- papers.filter
-- papers.selection.update
-- papers.selection.get
-- papers.selection.clear
-- papers.plan
-- papers.search
-- papers.search_by_author
-- papers.import_uploads
-- papers.info
-- papers.web_search
-- papers.news_search
-- papers.export_csv
+## 检查结果
 
-按需读取 [参数说明](references/parameters.md) 和 [结果说明](references/outputs.md)。参数采用能力注册表 Schema；可用 researchmind-skills capabilities describe <能力编号> --output-format json 查询，不猜测工具别名。
-
-检查 status 和 error。accepted 只是已提交，需继续通过 jobs status/result 查询；partial 必须报告逐项失败。优先复用同 workspace/会话内的 artifact_id 和 job_id，避免重新检索或计算。重试使用相同 request_id；不同请求不可复用该 ID。读取技能不自动注册工具或赋予权限。
-
-日志在 stderr，stdout 的一个 JSON 对象才是执行结果；输出路径和第三方凭据来自宿主或本地配置。共享 CIF 校验、CSV 导出、分段读取通过相同运行层执行，无需 MCP。
+检查 JSON 的 `paper_count`、`failures` 及实际文件。分享论文时至少给标题、链接、来源和可用年份。空结果时先检查查询语法，再调整术语或数据源。选集和批量操作见 [清单操作](references/catalog.md)。
