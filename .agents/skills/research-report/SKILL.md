@@ -1,18 +1,26 @@
 ---
 name: research-report
-description: 根据用户选定的论文或提取后的证据生成带来源的研究报告，核对引用 ID 和证据范围。适用于已有文献集的综述与证据汇总。
+description: 根据选定论文生成带出处的简明研究报告，检查引用 ID、证据级别和覆盖范围。适用于已有文献集的综述、证据汇总和研究简报。
 ---
 
-在本 Skill 目录使用 Python 3.11 或 3.12 安装依赖。
+# 基于文献生成研究报告
+
+## 1. 确定报告范围
+
+使用用户指定的主题、语言和论文范围。已有论文清单时直接复用。清单包含 `papers` 数组，保留原始 `paper_id`、标题和可用链接。证据可来自 `content_file`、公开 `pdf_url` 或 `abstract`，相对 `content_file` 路径从清单所在目录解析。只分析选定论文时用 `--paper-id` 指定，省略该参数会使用清单里的全部论文。
+
+## 2. 生成草稿
+
+在本 Skill 目录运行 `python -m pip install -r requirements.txt`。用已配置的 `OPENAI_API_KEY`、`MODEL_USE` 和可选 `OPENAI_BASE_URL` 运行 [write_report.py](scripts/write_report.py)。
 
 ```bash
-python -m pip install -r requirements.txt
+python scripts/write_report.py --papers ./evidence/papers.json --topic "层状钙钛矿的电荷有序证据" --language Chinese --out-dir ./report
 ```
 
-准备一个包含 `papers` 数组的 JSON 文件。每条记录有 `paper_id` 和标题，证据来自相对该清单的 `content_file`、公开 `pdf_url` 或 `abstract`。选定关键论文，核对每条来源和证据级别。让用户配置 `OPENAI_API_KEY`、`MODEL_USE` 及可选 `OPENAI_BASE_URL`。
+脚本生成简报。主题过宽时，按用户关注的问题缩小论文范围。`--max-characters` 是所有论文合计的证据字符预算。设置前结合论文数量和模型上下文，查看结果里哪些论文被截断。
 
-```bash
-python scripts/write_report.py --papers ./evidence/papers.json --topic "钙钛矿电荷有序" --out-dir ./report
-```
+## 3. 核对引用并交付
 
-用 `--paper-id` 指定子集，`--max-characters` 控制总证据字符数。交付 `report.md` 和 `report.json`。查看后者的引用、证据标签和截断状态，并对照原文核查关键事实。单篇报告在页首标明原论文来源。多篇报告需要至少一个可追溯的正文引用。遇到未知引用 ID 时，脚本报错。
+1. 查看 `report.json` 中的 `citations`、`evidence`、`failures` 和 `warnings`。单篇报告在正文前标明来源，多篇报告的正文包含可追溯论文 ID。
+2. 把关键结论对照实际引用的段落。脚本校验引用 ID，证据是否支持具体结论需要对照原文。资料只含摘要或节选时保留证据限制。
+3. 交付 `report.md`；需要复核来源或模型输出状态时附 `report.json`。引用无效时，根据报错核对选集、原始 ID 和模型输出。
