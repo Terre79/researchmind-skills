@@ -1,25 +1,38 @@
 ---
 name: literature-knowledge
-description: 对已有论文正文或摘要建立持久化语义索引，并检索带论文 ID、来源和字符位置的片段。适用于已知文献集合中的证据定位。
+description: 为已有论文建立持久化语义索引，按问题检索带论文 ID、来源和字符位置的片段。适用于在指定文献集合中定位证据。
 ---
 
 # 文献语义索引与检索
 
-## 1. 判断是否需要建索引
+## 适合用它做什么
 
-- 已有可用索引且只要求查找证据时，直接运行 [search_knowledge.py](scripts/search_knowledge.py)。
-- 新文献集或原文已更新时，用 [index_papers.py](scripts/index_papers.py) 处理所需论文。清单保留 `paper_id` 和可用的 `content_file`、`pdf_url` 或 `abstract`。限定论文时在建索引阶段加 `--paper-id`；查询覆盖所用集合里的内容。
-- 在本 Skill 目录运行 `python -m pip install -r requirements.txt`。配置 `GOOGLE_API_KEY`，或者提供 `OPENAI_API_KEY`、`OPENAI_EMBEDDING_MODEL` 和可选 `OPENAI_BASE_URL`。两次执行应使用同一嵌入服务和模型。
+- 把已选论文的正文或摘要写入本地持久化索引。
+- 用自然语言查询已有索引，找出可以回到原文核对的片段。
 
-## 2. 执行
+## 典型请求
 
-以下示例用同一索引目录、集合名和分段字符数。模型输入太长时，可使用较小的 `--chunk-size` 重新索引，并在查询命令里使用同一值。
+- “把这些论文建成一个可重复查询的知识库。”
+- “从现有索引找出关于二维电荷有序的三段证据，并给我原文位置。”
+
+## 你需要提供
+
+- 建索引时提供 `papers.json` 及输出索引目录，条目有 `paper_id` 和可用正文、公开 PDF 链接或摘要。查询时提供问题和已有索引目录。
+- 两次运行使用相同的集合名、`--chunk-size`、嵌入服务和模型。安装 [依赖](requirements.txt)，配置 `GOOGLE_API_KEY`，或配置 `OPENAI_API_KEY`、`OPENAI_EMBEDDING_MODEL` 及可选的 `OPENAI_BASE_URL`。
+
+## 产出
+
+- [index_papers.py](scripts/index_papers.py) 写入持久化索引并返回论文 ID、片段数和失败项。
+- [search_knowledge.py](scripts/search_knowledge.py) 返回相关片段和 `paper_id`、`source`、`evidence`、字符偏移 `start` 和 `end`。提供 `--output` 可保存 JSON。
+
+在本 Skill 目录执行：
 
 ```bash
 python scripts/index_papers.py --papers ./evidence/papers.json --index-dir ./index --collection perovskites --chunk-size 512
 python scripts/search_knowledge.py --index-dir ./index --collection perovskites --chunk-size 512 --query "二维电荷有序有哪些证据" --top-k 5 --output ./matches.json
 ```
 
-## 3. 检查和交付
+## 边界
 
-建索引后核对成功的论文 ID、片段数和 `failures`。索引找不到时先检查目录、集合、服务、模型和分段参数。返回命中时保留 `paper_id`、`source`、`evidence` 和字符区间 `start` 至 `end`，按相关性整理片段。引用事实前读回原文上下文。空结果或证据不足时说明实际覆盖范围。
+- 查询范围由现有索引决定。若索引不存在，先检查目录、集合名、模型和分段大小。若服务限制输入长度，可用较小分段重新建索引。
+- 匹配距离用于排序。引用片段前回到原文核对上下文，并说明摘要、正文和覆盖范围。

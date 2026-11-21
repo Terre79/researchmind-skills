@@ -1,23 +1,38 @@
 ---
 name: thermal-conductivity
-description: 用 AI4Kappa 的体积和剪切模量检查点，通过 Kappa-P 或 Kappa-MTP 预测晶体在 300 K 的晶格热导率。适用于对给定结构进行模型估算。
+description: 用 AI4Kappa 模量模型及 Kappa-P 或 Kappa-MTP 方法预测晶体在 300 K 的晶格热导率。
 ---
 
 # 晶格热导率预测
 
-## 1. 核对输入和计算方法
+## 适合用它做什么
 
-准备一个或多个含确定占位的周期 CIF。此预测流程适用于 300 K。用户指定其他温度时，说明可用模型的温度范围。按用户要求选 `kappa_p`、`kappa_mtp` 或 `both`。两种方法的结果保留各自标签。
+- 对一个或多个有序周期晶体估算 300 K 的晶格热导率。
+- 用 Kappa-P、Kappa-MTP 或两种方法分别计算，并比较预测结果。
 
-## 2. 准备权重并执行
+## 典型请求
 
-在本 Skill 目录按 [依赖清单](requirements.txt) 准备环境。首次准备权重时读 [AI4Kappa 模型说明](references/model.md)，由 [setup_models.py](scripts/setup_models.py) 获取并校验两份检查点和元素特征表。若特征表不在模型目录，给 [predict_conductivity.py](scripts/predict_conductivity.py) 传 `--atom-init`。
+- “用两种方法预测这份硅 CIF 在 300 K 的晶格热导率，导出 CSV。”
+- “批量跑这三个结构，只给我 Kappa-P 的结果和失败记录。”
+
+## 你需要提供
+
+- 提供周期 CIF、模型目录和输出目录。方法可选 `kappa_p`、`kappa_mtp` 或 `both`。
+- 模型目录包含体积模量、剪切模量检查点和元素特征表。若特征表位于其他目录，用 `--atom-init`。首次准备查看 [模型说明](references/model.md) 和 [依赖](requirements.txt)。
+
+## 产出
+
+- [predict_conductivity.py](scripts/predict_conductivity.py) 输出 `thermal_conductivity.json` 和成功结果的 CSV。按输入结构和方法报告 300 K 下的预测值，热导率单位为 W/(m·K)。
+- 核对两种模量和热导率均为有限正值，逐项说明失败。若两种方法差异明显，保留各自的数值和方法标签。
+
+在本 Skill 目录执行：
 
 ```bash
 python scripts/setup_models.py --model-dir ./models/kappa
 python scripts/predict_conductivity.py --input ./si.cif --model-dir ./models/kappa --method both --temperature 300 --out-dir ./conductivity
 ```
 
-## 3. 核对并交付
+## 边界
 
-在 `thermal_conductivity.json` 中按输入结构和方法核对结果，检查体积与剪切模量以及热导率为有限正值。报告预测温度 300 K、单位 W/(m·K)、计算方法及实际的失败条目，附上生成的 JSON 和 CSV。若两种方法有明显差异，分别保留结果并注明它们都是模型预测。
+- 当前模型的计算温度固定为 300 K。输入必须是有确定原子占位的周期结构。
+- 结果为模型预测。用于工程设计或定量比较时，应结合适用范围、参考数据和实验结果。

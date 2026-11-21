@@ -1,30 +1,39 @@
 ---
 name: structure-optimization
-description: 对给定 CIF 检查结构，用 MatterSim 计算单点能和原子力，或实施固定晶胞及可变晶胞的几何弛豫。
+description: 对给定 CIF 用 MatterSim 计算单点能和原子力，或执行固定晶胞与可变晶胞的几何弛豫。
 ---
 
 # 结构能量与弛豫
 
-## 1. 按任务选入口
+## 适合用它做什么
 
-| 用户要做什么 | 执行入口 |
-| --- | --- |
-| 检查输入 CIF | [validate_cif.py](scripts/validate_cif.py)，只需要结构解析依赖。 |
-| 计算给定构型的能量和原子力 | [calculate_energy.py](scripts/calculate_energy.py)。 |
-| 降低原子受力，保存弛豫构型 | [relax_structure.py](scripts/relax_structure.py)。默认固定晶胞，用户要求调整晶胞时用 `--relax-cell`。 |
+- 校验输入 CIF，计算给定构型的总能量、每原子能量和原子力。
+- 用 MatterSim 做几何弛豫并导出优化后的结构。可按要求固定晶胞或同步调整晶胞。
 
-## 2. 执行计算
+## 典型请求
 
-在本 Skill 目录按 [依赖清单](requirements.txt) 准备环境。计算任务需要 MatterSim 检查点，首次安装或遇到编译问题时读 [模型准备与平台要求](references/model.md)。提供实际输入和输出目录；需要时记录 `--device`、`--fmax` 和 `--max-steps`。
+- “计算这个硅结构的单点能，把每个原子的力列出来。”
+- “固定晶胞弛豫这份 CIF，最大受力阈值设为 0.03 eV/Å。”
+- “让晶胞也参与弛豫，给我收敛记录和优化后的 CIF。”
+
+## 你需要提供
+
+- 提供输入 CIF、MatterSim 权重路径和输出目录。可补充 `--device`、`--fmax`、`--max-steps`，需要调整晶胞时用 `--relax-cell`。
+- 初次配置按 [依赖清单](requirements.txt) 安装并查看 [模型准备与平台要求](references/model.md)。只校验 CIF 时用 [validate_cif.py](scripts/validate_cif.py)，无需加载权重。
+
+## 产出
+
+- [calculate_energy.py](scripts/calculate_energy.py) 生成 `energy.json`，包括总能量 eV、每原子能量 eV/atom 和原子力 eV/Å。
+- [relax_structure.py](scripts/relax_structure.py) 输出 `relaxed.cif`、`relaxation.json` 和日志。核对 `converged`、步数、晶胞设置和弛豫前后最大原子受力。
+
+在本 Skill 目录执行：
 
 ```bash
-python scripts/validate_cif.py --input ./si.cif
 python scripts/calculate_energy.py --input ./si.cif --model-path ./models/mattersim-v1.0.0-1M.pth --out-dir ./energy
 python scripts/relax_structure.py --input ./si.cif --model-path ./models/mattersim-v1.0.0-1M.pth --fmax 0.03 --out-dir ./relaxed
 ```
 
-## 3. 核对并交付
+## 边界
 
-- 单点结果见 `energy.json`。区分总能量、每原子能量和原子力，单位分别为 eV、eV/atom 和 eV/Å。比较结构时记录模型和能量归一方式。
-- 弛豫结果见 `relaxation.json` 与 `relaxed.cif`。报告 `converged`、步数、是否放开晶胞及前后最大原子受力，并重新解析输出 CIF。达到步数上限时标明未收敛。
-- 解释稳定性时注明这是势模型计算。热力学稳定性需要相应组成空间的参考相及统一能量基准。
+- 结构比较应记录相同的势模型与能量归一方式。达到步数上限仍未满足条件时，标记为未收敛。
+- 热力学稳定性判断依赖参考相和统一能量基准。单点能和弛豫结果仅反映相应势模型及所给构型。

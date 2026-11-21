@@ -1,26 +1,37 @@
 ---
 name: research-report
-description: 根据选定论文生成带出处的简明研究报告，检查引用 ID、证据级别和覆盖范围。适用于已有文献集的综述、证据汇总和研究简报。
+description: 根据用户指定的论文生成带出处的简明报告，核对引用 ID 和证据范围。适用于选定文献集的证据汇总与研究简报。
 ---
 
 # 基于文献生成研究报告
 
-## 1. 确定报告范围
+## 适合用它做什么
 
-使用用户指定的主题、语言和论文范围。已有论文清单时直接复用。清单包含 `papers` 数组，保留原始 `paper_id`、标题和可用链接。证据可来自 `content_file`、公开 `pdf_url` 或 `abstract`，相对 `content_file` 路径从清单所在目录解析。只分析选定论文时用 `--paper-id` 指定，省略该参数会使用清单里的全部论文。
+- 围绕一个明确问题汇总已选论文，组织各来源支持的结论及分歧。
+- 给单篇论文写带来源的简报，或把多篇证据整理成有可追溯引用的报告。
 
-## 2. 生成草稿
+## 典型请求
 
-在本 Skill 目录运行 `python -m pip install -r requirements.txt`。用已配置的 `OPENAI_API_KEY`、`MODEL_USE` 和可选 `OPENAI_BASE_URL` 运行 [write_report.py](scripts/write_report.py)。
+- “用这三篇论文写一份中文简报，标出每个主要结论来自哪篇。”
+- “根据这篇论文写一页摘要，注明只能看到节选的部分。”
+
+## 你需要提供
+
+- 提供主题、输出语言和论文清单。清单包含 `papers` 数组，每条保留真实 `paper_id`、标题和已有链接。证据来自 `content_file`、公开 `pdf_url` 或 `abstract`。相对文件路径以清单所在目录为准。
+- 需要限制论文范围时给 `--paper-id`，否则处理清单里的全部论文。准备 [依赖](requirements.txt) 和兼容服务的 `OPENAI_API_KEY`、`MODEL_USE` 及可选的 `OPENAI_BASE_URL`。
+
+## 产出
+
+- `report.md` 为报告正文，`report.json` 提供引用、证据级别、截断和失败情况。单篇报告注明原论文来源；多篇报告使用可追溯的正文引用。
+- 用 [write_report.py](scripts/write_report.py) 生成结果。`--max-characters` 控制全部论文合计的证据字符预算。
+
+在本 Skill 目录执行：
 
 ```bash
 python scripts/write_report.py --papers ./evidence/papers.json --topic "层状钙钛矿的电荷有序证据" --language Chinese --out-dir ./report
 ```
 
-脚本生成简报。主题过宽时，按用户关注的问题缩小论文范围。`--max-characters` 是所有论文合计的证据字符预算。设置前结合论文数量和模型上下文，查看结果里哪些论文被截断。
+## 边界
 
-## 3. 核对引用并交付
-
-1. 查看 `report.json` 中的 `citations`、`evidence`、`failures` 和 `warnings`。单篇报告在正文前标明来源，多篇报告的正文包含可追溯论文 ID。
-2. 把关键结论对照实际引用的段落。脚本校验引用 ID，证据是否支持具体结论需要对照原文。资料只含摘要或节选时保留证据限制。
-3. 交付 `report.md`；需要复核来源或模型输出状态时附 `report.json`。引用无效时，根据报错核对选集、原始 ID 和模型输出。
+- 报告覆盖输入清单和可取得的证据。摘要、节选或截断情况随结论注明。
+- 脚本校验引用 ID。交付前要对照原文检查引用是否支持具体结论；未知引用或多篇报告缺少有效引用时会报错。

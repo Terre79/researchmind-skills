@@ -1,27 +1,38 @@
 ---
 name: materials-search
-description: 按化学组成查询 COD、OQMD、AFLOW 或 Materials Project，导出带来源的材料记录及可用 CIF。适用于寻找已有晶体结构和按数据库指标排序。
+description: 按化学组成查询 COD、OQMD、AFLOW 或 Materials Project，导出带来源的记录及可用 CIF，或按数据库内的指标排序。
 ---
 
 # 材料数据库查询
 
-## 1. 确定来源与目标
+## 适合用它做什么
 
-- 要实验晶体记录，选 COD。要计算结构或能量字段，选 OQMD、AFLOW 或 Materials Project。用户指定来源时按其要求执行。启用 Materials Project 前确认已配置 `MP_API_KEY`。
-- 要下载现有结构，用 [search_materials.py](scripts/search_materials.py)。要按已有性质筛选候选，用 [recommend_materials.py](scripts/recommend_materials.py) 并按来源解读排序。
-- 需要解释形成能、凸包距离、缺失值或 AFLOW 查询限制时，再读 [数据源与排序指标](references/sources.md)。
+- 从 COD 查实验晶体记录，或从 OQMD、AFLOW 和 Materials Project 查计算结构及已有材料性质。
+- 导出可用于后续计算的 CIF，或按各来源已有的数值字段整理候选。
 
-## 2. 执行
+## 典型请求
 
-在本 Skill 目录运行 `python -m pip install -r requirements.txt`。传入用户指定的化学式，`--limit` 对每个数据源分别生效。以下以硅为例。
+- “从 COD 和 OQMD 各找两个硅结构，把能拿到的 CIF 下载给我。”
+- “查 OQMD 的 NaCl 候选结构，在同一数据库内按形成能排序。”
+
+## 你需要提供
+
+- 提供化学式，可选数据源及每个源的记录上限，然后指定输出目录。查询 Materials Project 需 `MP_API_KEY`。
+- 在本 Skill 目录安装 [依赖](requirements.txt)。排名或解释数据库字段时查看 [来源与排序指标](references/sources.md)。
+
+## 产出
+
+- [search_materials.py](scripts/search_materials.py) 生成 `materials.json`，[recommend_materials.py](scripts/recommend_materials.py) 生成 `recommendations.json`。记录含 `source`、`source_id` 和可用元数据。
+- 结构下载成功时，记录中的 `cif` 指向输出目录下的实际文件。按来源交付结果，并汇报 `failures` 和 `warnings`。
+
+在本 Skill 目录执行：
 
 ```bash
 python scripts/search_materials.py --formula Si --sources cod oqmd aflow --limit 2 --out-dir ./silicon
-python scripts/recommend_materials.py --formula Si --sources oqmd --limit 5 --out-dir ./ranked
+python scripts/recommend_materials.py --formula NaCl --sources oqmd --limit 5 --out-dir ./ranked
 ```
 
-## 3. 检查和交付
+## 边界
 
-1. 读 `materials.json` 或 `recommendations.json`，核对 `formula`、实际记录数量及每条的 `source`、`source_id`。
-2. 逐条对照 `cif` 字段与实际文件。只有记录却缺 CIF 时，保留记录并说明导出失败原因。跨数据库的能量指标分别解读。
-3. 报告 `failures` 和 `warnings`。来源不可用时交付其他来源的结果；所有源均无命中时，说明已查询的组成与来源。
+- 数据库结果可能只有记录和属性。缺 CIF 时说明原因，并保留仍有用的记录。单一来源失败时可使用其他成功来源。
+- 排序在同一来源内解释。形成能和凸包距离应分别报告，查询结果覆盖范围以所选来源实际返回为准。
