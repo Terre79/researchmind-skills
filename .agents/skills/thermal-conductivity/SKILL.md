@@ -1,6 +1,9 @@
 ---
 name: thermal-conductivity
 description: 用 AI4Kappa 模量模型及 Kappa-P 或 Kappa-MTP 方法预测晶体在 300 K 的晶格热导率。
+compatibility: 需要本地执行权限和可写缓存。首次下载依赖和模型需联网；已准备的本地计算支持离线。
+metadata:
+  version: "2.0"
 ---
 
 # 晶格热导率预测
@@ -17,7 +20,7 @@ description: 用 AI4Kappa 模量模型及 Kappa-P 或 Kappa-MTP 方法预测晶�
 
 ## 你需要提供
 
-热导率完整 ZIP 尚待原版权重再分发授权。当前源码版按本节的依赖清单和模型说明配置后运行。
+通过本技能的启动器执行用户的原任务。启动器检查所选操作，按需安装，复查后执行；使用用户原来的输入、参数和输出路径。
 
 - 提供周期 CIF、模型目录和输出目录。方法可选 `kappa_p`、`kappa_mtp` 或 `both`。
 - 模型目录包含体积模量、剪切模量检查点和元素特征表。若特征表位于其他目录，用 `--atom-init`。首次准备查看 [模型说明](references/model.md) 和 [依赖](requirements.txt)。
@@ -27,11 +30,12 @@ description: 用 AI4Kappa 模量模型及 Kappa-P 或 Kappa-MTP 方法预测晶�
 - [predict_conductivity.py](scripts/predict_conductivity.py) 输出 `thermal_conductivity.json` 和成功结果的 CSV。按输入结构和方法报告 300 K 下的预测值，热导率单位为 W/(m·K)。
 - 核对两种模量和热导率均为有限正值，逐项说明失败。若两种方法差异明显，保留各自的数值和方法标签。
 
-在本 Skill 目录执行：
+## 运行
 
-```bash
-python scripts/setup_models.py --model-dir ./models/kappa
-python scripts/predict_conductivity.py --input ./si.cif --model-dir ./models/kappa --method both --temperature 300 --out-dir ./conductivity
+使用本技能目录内的启动器。Windows 示例如下；Linux 和 macOS 把 `.\scripts\run.ps1` 替换为 `sh ./scripts/run.sh`。从其他目录运行时传入启动器的绝对路径。只读诊断使用 `doctor 操作名 --json`，正常任务使用 `run 操作名`。缺少外部条件时见 [环境与缓存](references/setup.md)。
+
+```powershell
+.\scripts\run.ps1 run predict-conductivity --input ./si.cif --method both --temperature 300 --out-dir ./conductivity
 ```
 
 ## 边界

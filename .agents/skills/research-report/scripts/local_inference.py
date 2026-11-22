@@ -14,12 +14,13 @@ import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-SERVER = ROOT / "engine" / "llama-server.exe"
+SERVER = Path(os.getenv("RM_LLAMA_SERVER") or ROOT / "engine" / ("llama-server.exe" if os.name == "nt" else "llama-server")).resolve()
+MODEL_DIR = Path(os.getenv("RM_MODEL_DIR") or ROOT / "models").resolve()
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
 def installed(filename):
-    return SERVER.is_file() and (ROOT / "models" / filename).is_file()
+    return SERVER.is_file() and (MODEL_DIR / filename).is_file()
 
 
 class Server:
@@ -32,7 +33,7 @@ class Server:
         self.headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
         args = [
             str(SERVER), "--host", "127.0.0.1", "--port", str(port), "--api-key", token,
-            "--model", str(Path("..") / "models" / filename), "--alias", "bundled",
+            "--model", filename, "--alias", "bundled",
             "--threads", str(min(4, os.cpu_count() or 1)), "--n-gpu-layers", "0",
         ]
         if mode == "embedding":
@@ -41,7 +42,7 @@ class Server:
             args += ["--ctx-size", "16384"]
         with TemporaryFile() as log:
             self.process = subprocess.Popen(
-                args, cwd=SERVER.parent, stdout=log, stderr=log,
+                args, cwd=MODEL_DIR, stdout=log, stderr=log,
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
             try:
@@ -91,5 +92,5 @@ class Server:
 @lru_cache(maxsize=2)
 def inference(filename, mode):
     if not installed(filename):
-        raise FileNotFoundError(f"The full Skill ZIP must contain the local engine and models/{filename}")
+        raise FileNotFoundError(f"Run the skill launcher to prepare the engine and {filename}")
     return Server(filename, mode)

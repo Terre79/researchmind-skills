@@ -1,0 +1,76 @@
+[
+  {
+    "tag": "skills-win-cpu-v1",
+    "published": "2026-11-22T06:07:43Z",
+    "immutable": false,
+    "assets": [
+      {
+        "name": "crystal-generation-win-x64-cpu-v1.zip",
+        "bytes": 643400840,
+        "digest": "sha256:34605b840936ea8591f38837f43c452a4120d6ba20ad926ed8b1e09a8a0b4bbe"
+      },
+      {
+        "name": "literature-knowledge-win-x64-cpu-v1.zip",
+        "bytes": 733223700,
+        "digest": "sha256:0623e76e0ec127f6f83b3ea191234183a5e1bb8d61ead79aaa2905527ab0e647"
+      },
+      {
+        "name": "literature-search-win-x64-cpu-v1.zip",
+        "bytes": 506991730,
+        "digest": "sha256:efd9ea705be96d398e0d0cc1678b272970eb76b04543ecdb60ee6e9617a377fd"
+      },
+      {
+        "name": "materials-search-win-x64-cpu-v1.zip",
+        "bytes": 125605938,
+        "digest": "sha256:406228809790f3786b815aea5189a0ef87fa246cd77e07a0cd2f5de030dc5657"
+      },
+      {
+        "name": "paper-analysis-win-x64-cpu-v1.zip",
+        "bytes": 506982839,
+        "digest": "sha256:d7fd53881dd378e0c3dd3db5c9c877d6f99fade8247729bb76a89d4168061e18"
+      },
+      {
+        "name": "phonon-analysis-win-x64-cpu-v1.zip",
+        "bytes": 400086399,
+        "digest": "sha256:0419a3f820b459a65ac3a8c4ef589fbba52b701a33086f09bb8c686776a0dcb5"
+      },
+      {
+        "name": "research-report-win-x64-cpu-v1.zip",
+        "bytes": 506981999,
+        "digest": "sha256:acadfe599de63db6da30d9d08aeee713596f850966c16893443933716f2f12b7"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "bytes": 826,
+        "digest": "sha256:d4a9438b7d0c4f233d31f3a266d6e8e601ac1248c2c988de0921ee590e59da0a"
+      },
+      {
+        "name": "structure-optimization-win-x64-cpu-v1.zip",
+        "bytes": 396153574,
+        "digest": "sha256:7e3c9196fe4ce3b210798ab8dab5a50f33952b59422304e879d4cdb594e258b4"
+      }
+    ]
+  },
+  {
+    "tag": "models-v1",
+    "published": "2026-11-21T15:08:44Z",
+    "immutable": false,
+    "assets": [
+      {
+        "name": "crystallm_v1_small.tar.gz",
+        "bytes": 285005939,
+        "digest": "sha256:4de094eee7d95249851d451e2dbb0a0277493c14565b6d13d419b0f50e1b9620"
+      },
+      {
+        "name": "MatterSim-MIT.txt",
+        "bytes": 1073,
+        "digest": "sha256:fd532481d828e13a0b13ccb598e02338a3617740675a862ee6bdc1541b68e93d"
+      },
+      {
+        "name": "mattersim-v1.0.0-1M.pth",
+        "bytes": 17932943,
+        "digest": "sha256:28b0b0b0f13efefee06b47ea4c9105a26bd3e2c8396da193430da96b3b49a8be"
+      }
+    ]
+  }
+]

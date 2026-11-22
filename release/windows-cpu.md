@@ -1,5 +1,7 @@
 # 构建和验收 Windows x64 CPU Skill
 
+> 旧版 Windows 二进制预览包的历史记录。当前安装方式见 [源码运行说明](../README.md)。
+
 用户在 GitHub Release 下载对应的 `*-win-x64-cpu-v1.zip`，解压包含 `SKILL.md` 的完整目录。脚本在 `python/python.exe` 下运行，权重、解释器和依赖均在技能目录内。具有本地执行权限的宿主可把该目录注册为 Skill。GitHub 自动生成的 Source code 是源码快照。
 
 ## 构建机输入

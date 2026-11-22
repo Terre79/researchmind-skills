@@ -1,0 +1,40 @@
+name: Source skill tests
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  contract:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/sync-runtime.py --check
+      - run: python -m unittest discover -s tests -v
+      - name: Verify source packaging
+        if: runner.os == 'Linux'
+        run: |
+          git archive --format=zip -o "$RUNNER_TEMP/source.zip" HEAD
+          python tools/check-source-archive.py "$RUNNER_TEMP/source.zip"
+  scientific:
+    if: github.event_name == 'workflow_dispatch'
+    needs: contract
+    strategy:
+      fail-fast: false
+      matrix:
+        skill: [paper-analysis, research-report, literature-knowledge, literature-search, materials-search, crystal-generation, structure-optimization, phonon-analysis, thermal-conductivity]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.9'
+      - run: python tests/science_smoke.py --repeat 2 ${{ matrix.skill }}

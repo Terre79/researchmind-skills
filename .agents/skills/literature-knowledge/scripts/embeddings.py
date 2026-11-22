@@ -3,7 +3,7 @@ import math
 import os
 
 from http_client import request
-from local_inference import ROOT, inference, installed
+from local_inference import inference
 
 FILENAME = "Qwen3-Embedding-0.6B-Q8_0.gguf"
 LOCAL_MODEL = "Qwen3-Embedding-0.6B-Q8_0@370f27d"
@@ -11,14 +11,14 @@ QUERY_INSTRUCTION = "Given a research question, retrieve relevant scientific pap
 
 
 def configuration():
-    if wants_local() and (installed(FILENAME) or (ROOT / "bundle-manifest.json").exists()):
+    if wants_local():
         return "local", LOCAL_MODEL, "", ""
     if google_key := os.getenv("GOOGLE_API_KEY"):
         return "google", os.getenv("GOOGLE_EMBEDDING_MODEL", "gemini-embedding-001"), google_key, ""
     model = os.getenv("OPENAI_EMBEDDING_MODEL")
     key = os.getenv("OPENAI_API_KEY")
     if not model or not key:
-        raise RuntimeError("Use the complete Skill ZIP or configure a compatible embedding service")
+        raise RuntimeError("Configure a compatible embedding service for remote mode")
     return "openai", model, key, os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
 
 

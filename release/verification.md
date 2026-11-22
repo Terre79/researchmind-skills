@@ -1,5 +1,7 @@
 # Windows x64 CPU 预览包验收
 
+> 旧版 Windows 二进制预览包的历史记录。当前安装方式见 [源码运行说明](../README.md)。
+
 每个 ZIP 在本地 Windows x64 机器上单独解压到含中文和空格的临时路径。验证脚本清除系统 Python 路径、Python 环境变量和模型配置，只使用包内的 `python/python.exe` 与内置资产。离线验证禁用对外 HTTP(S) 代理路径，推理模型直接在本机执行。在线检索验证使用公开服务。
 
 | Skill | 实际输出 |

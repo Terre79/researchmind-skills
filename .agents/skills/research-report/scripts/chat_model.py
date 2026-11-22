@@ -2,7 +2,7 @@
 import os
 
 from http_client import request
-from local_inference import ROOT, inference, installed
+from local_inference import inference
 
 FILENAME = "qwen2.5-0.5b-instruct-q4_k_m.gguf"
 LOCAL_MODEL = "Qwen2.5-0.5B-Instruct-Q4_K_M"
@@ -11,9 +11,7 @@ LOCAL_MODEL = "Qwen2.5-0.5B-Instruct-Q4_K_M"
 def complete(prompt, max_tokens):
     if not 1 <= max_tokens <= 8192:
         raise ValueError("max-tokens must be between 1 and 8192")
-    local = os.getenv("RM_CHAT_BACKEND", "local") != "remote" and (
-        installed(FILENAME) or (ROOT / "bundle-manifest.json").exists()
-    )
+    local = os.getenv("RM_CHAT_BACKEND", "local") != "remote"
     model = LOCAL_MODEL if local else os.getenv("MODEL_USE", "gpt-4o-mini")
     payload = {
         "model": "bundled" if local else model,
@@ -27,7 +25,7 @@ def complete(prompt, max_tokens):
     else:
         key = os.getenv("OPENAI_API_KEY")
         if not key:
-            raise RuntimeError("Use the complete Skill ZIP or configure OPENAI_API_KEY for a compatible service")
+            raise RuntimeError("Configure OPENAI_API_KEY for the remote chat service")
         base = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
         response = request(base + "/chat/completions", payload=payload,
                            headers={"Authorization": f"Bearer {key}"}, timeout=180)

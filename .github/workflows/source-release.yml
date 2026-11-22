@@ -1,0 +1,20 @@
+name: Audit source releases
+on:
+  workflow_dispatch:
+  release:
+    types: [edited]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check source archive and all public release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git archive --format=zip -o "$RUNNER_TEMP/source.zip" HEAD
+          python tools/check-source-archive.py "$RUNNER_TEMP/source.zip"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" |
+            jq -e 'all(.[][]; .draft or (.assets | length == 0))'
