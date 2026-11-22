@@ -18,8 +18,10 @@ description: 用 CrystaLLM 按给定组成和可选空间群生成候选晶体�
 
 ## 你需要提供
 
-- 生成时提供化学组成和输出目录，可补充候选数量、目标空间群、随机种子和运行设备。提供含 `ckpt.pt` 的模型目录。初次准备时查看 [模型安装与校验](references/model.md)。
-- 仅校验时提供 CIF 文件。环境依赖见 [依赖清单](requirements.txt)。
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
+- 生成时提供化学组成和输出目录，可补充候选数量、目标空间群、随机种子和运行设备。完整包已含 `ckpt.pt`。从源码运行时可覆盖模型目录，权重来源见 [模型安装与校验](references/model.md)。
+- 仅校验时提供 CIF 文件。源码环境依赖见 [依赖清单](requirements.txt)。
 
 ## 产出
 
@@ -28,10 +30,9 @@ description: 用 CrystaLLM 按给定组成和可选空间群生成候选晶体�
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/setup_models.py --model-dir ./models/crystallm_v1_small
-python scripts/generate_crystals.py --formula NaCl --num-samples 2 --seed 1337 --device cpu --model-dir ./models/crystallm_v1_small --out-dir ./nacl
-python scripts/validate_cif.py --input ./nacl/candidates/001.cif
+```powershell
+.\python\python.exe .\scripts\generate_crystals.py --formula NaCl --num-samples 2 --seed 1337 --device cpu --out-dir ./nacl
+.\python\python.exe .\scripts\validate_cif.py --input ./nacl/candidates/001.cif
 ```
 
 ## 边界

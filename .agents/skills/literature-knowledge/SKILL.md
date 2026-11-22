@@ -17,8 +17,10 @@ description: 为已有论文建立持久化语义索引，按问题检索带论�
 
 ## 你需要提供
 
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
 - 建索引时提供 `papers.json` 及输出索引目录，条目有 `paper_id` 和可用正文、公开 PDF 链接或摘要。查询时提供问题和已有索引目录。
-- 两次运行使用相同的集合名、`--chunk-size`、嵌入服务和模型。安装 [依赖](requirements.txt)，配置 `GOOGLE_API_KEY`，或配置 `OPENAI_API_KEY`、`OPENAI_EMBEDDING_MODEL` 及可选的 `OPENAI_BASE_URL`。
+- 两次运行使用相同的集合名、`--chunk-size`、嵌入服务和模型。完整包内置多语言嵌入模型，默认在本机运行。源码环境需安装 [依赖](requirements.txt) 并配置 `GOOGLE_API_KEY`，或配置 `OPENAI_API_KEY`、`OPENAI_EMBEDDING_MODEL` 及可选的 `OPENAI_BASE_URL`。
 
 ## 产出
 
@@ -27,9 +29,9 @@ description: 为已有论文建立持久化语义索引，按问题检索带论�
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/index_papers.py --papers ./evidence/papers.json --index-dir ./index --collection perovskites --chunk-size 512
-python scripts/search_knowledge.py --index-dir ./index --collection perovskites --chunk-size 512 --query "二维电荷有序有哪些证据" --top-k 5 --output ./matches.json
+```powershell
+.\python\python.exe .\scripts\index_papers.py --papers ./evidence/papers.json --index-dir ./index --collection perovskites --chunk-size 512
+.\python\python.exe .\scripts\search_knowledge.py --index-dir ./index --collection perovskites --chunk-size 512 --query "二维电荷有序有哪些证据" --top-k 5 --output ./matches.json
 ```
 
 ## 边界

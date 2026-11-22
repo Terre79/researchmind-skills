@@ -17,8 +17,10 @@ description: 按化学组成查询 COD、OQMD、AFLOW 或 Materials Project，�
 
 ## 你需要提供
 
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
 - 提供化学式，可选数据源及每个源的记录上限，然后指定输出目录。查询 Materials Project 需 `MP_API_KEY`。
-- 在本 Skill 目录安装 [依赖](requirements.txt)。排名或解释数据库字段时查看 [来源与排序指标](references/sources.md)。
+- 从源码部署时安装 [依赖](requirements.txt)。公开数据库的实时查询需要联网。排名或解释数据库字段时查看 [来源与排序指标](references/sources.md)。
 
 ## 产出
 
@@ -27,9 +29,9 @@ description: 按化学组成查询 COD、OQMD、AFLOW 或 Materials Project，�
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/search_materials.py --formula Si --sources cod oqmd aflow --limit 2 --out-dir ./silicon
-python scripts/recommend_materials.py --formula NaCl --sources oqmd --limit 5 --out-dir ./ranked
+```powershell
+.\python\python.exe .\scripts\search_materials.py --formula Si --sources cod oqmd aflow --limit 2 --out-dir ./silicon
+.\python\python.exe .\scripts\recommend_materials.py --formula NaCl --sources oqmd --limit 5 --out-dir ./ranked
 ```
 
 ## 边界

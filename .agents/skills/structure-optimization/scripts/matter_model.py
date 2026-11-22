@@ -6,7 +6,9 @@ from pathlib import Path
 
 def arguments(parser):
     parser.add_argument("--input", type=Path, required=True)
-    parser.add_argument("--model-path", type=Path, required=True)
+    parser.add_argument("--model-path", type=Path,
+                        default=Path(__file__).resolve().parents[1] / "models/mattersim-v1.0.0-1M.pth",
+                        help="Override the bundled model location")
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
 
 

@@ -6,7 +6,9 @@ from common import execute, output_parser, read_json, write_csv, write_json
 def run():
     parser = output_parser("Predict 300 K conductivity using the AI4Kappa moduli and formulas")
     parser.add_argument("--input", type=Path, nargs="+", required=True)
-    parser.add_argument("--model-dir", type=Path, required=True)
+    parser.add_argument("--model-dir", type=Path,
+                        default=Path(__file__).resolve().parents[1] / "models/kappa",
+                        help="Override the bundled model location")
     parser.add_argument("--atom-init", type=Path, help="Defaults to atom_init.json inside --model-dir")
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
     parser.add_argument("--method", choices=["kappa_p", "kappa_mtp", "both"], default="both")

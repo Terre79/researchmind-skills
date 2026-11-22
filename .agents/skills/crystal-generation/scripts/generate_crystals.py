@@ -12,7 +12,9 @@ def run():
     parser.add_argument("--seed", type=int, default=1337)
     parser.add_argument("--spacegroup")
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
-    parser.add_argument("--model-dir", type=Path, required=True)
+    parser.add_argument("--model-dir", type=Path,
+                        default=Path(__file__).resolve().parents[1] / "models/crystallm_v1_small",
+                        help="Override the bundled model location")
     args = parser.parse_args()
     checkpoint = args.model_dir / "ckpt.pt"
     if not checkpoint.is_file():

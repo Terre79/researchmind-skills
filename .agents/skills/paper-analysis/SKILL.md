@@ -18,8 +18,10 @@ description: 下载、提取和阅读指定论文，定位原文段落，或分�
 
 ## 你需要提供
 
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
 - 提供本地文档、公开下载 URL、已提取文本或论文清单。批量处理时可给论文 ID；必须取得全文时说明。
-- 分析时提供问题和输出语言。用兼容模型服务配置 `OPENAI_API_KEY`、`MODEL_USE` 及可选的 `OPENAI_BASE_URL`。PDF 和 DOCX 提取需安装 [依赖](requirements.txt)。
+- 分析时提供问题和输出语言。完整包默认使用内置模型。源码版可使用兼容服务，配置 `OPENAI_API_KEY`、`MODEL_USE` 及可选的 `OPENAI_BASE_URL`。源码版的 PDF 和 DOCX 提取需安装 [依赖](requirements.txt)。
 
 ## 产出
 
@@ -28,11 +30,11 @@ description: 下载、提取和阅读指定论文，定位原文段落，或分�
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/extract_text.py --input ./paper.pdf --out-dir ./evidence
-python scripts/read_segment.py --input ./evidence/paper.txt --start 0 --length 1200
-python scripts/find_in_text.py --input ./evidence/paper.txt --term "limitations" --limit 5
-python scripts/analyze_paper.py --papers ./evidence/papers.json --instruction "说明方法、发现和局限" --out-dir ./analysis
+```powershell
+.\python\python.exe .\scripts\extract_text.py --input ./paper.pdf --out-dir ./evidence
+.\python\python.exe .\scripts\read_segment.py --input ./evidence/paper.txt --start 0 --length 1200
+.\python\python.exe .\scripts\find_in_text.py --input ./evidence/paper.txt --term "limitations" --limit 5
+.\python\python.exe .\scripts\analyze_paper.py --papers ./evidence/papers.json --instruction "说明方法、发现和局限" --out-dir ./analysis
 ```
 
 ## 边界

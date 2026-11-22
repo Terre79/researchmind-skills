@@ -3,6 +3,7 @@ import hashlib
 import json
 
 import chromadb
+from chromadb.config import Settings
 
 from embeddings import embedded
 
@@ -12,7 +13,7 @@ CHUNK_VERSION = "chars-v1"
 def collection(index, name, config, chunk_size, *, create=False):
     provider, model, _, base = config
     digest = hashlib.sha256(json.dumps([name, provider, model, base, CHUNK_VERSION, chunk_size]).encode()).hexdigest()
-    client = chromadb.PersistentClient(path=str(index.resolve()))
+    client = chromadb.PersistentClient(path=str(index.resolve()), settings=Settings(anonymized_telemetry=False))
     key = "papers-" + digest[:32]
     if create:
         return client.get_or_create_collection(

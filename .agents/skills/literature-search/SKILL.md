@@ -18,8 +18,10 @@ description: 按主题、作者或 arXiv ID 查找论文，导入本地文献、
 
 ## 你需要提供
 
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
 - 在线检索提供主题、作者或 ID，可补充年份、来源和条数。已有资料可直接提供本地文档或 `papers.json`。
-- 提供输出目录；筛选时给主题或论文 ID。PDF 和 DOCX 导入需安装 [依赖](requirements.txt)。Tavily 需 `TAVILY_API_KEY`；生成计划需配置兼容模型服务的 `OPENAI_API_KEY`、`MODEL_USE` 及可选的 `OPENAI_BASE_URL`。
+- 提供输出目录；筛选时给主题或论文 ID。完整包内含 PDF/DOCX 解析库和本地计划模型；从源码部署时安装 [依赖](requirements.txt)。Tavily 需 `TAVILY_API_KEY`。从源码生成计划时配置兼容模型服务的 `OPENAI_API_KEY`、`MODEL_USE` 及可选的 `OPENAI_BASE_URL`。
 
 ## 产出
 
@@ -28,10 +30,10 @@ description: 按主题、作者或 arXiv ID 查找论文，导入本地文献、
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/search_papers.py --query "all:perovskite" --sources arxiv --limit 5 --out-dir ./literature
-python scripts/search_by_author.py --author "Shoucheng Zhang" --limit 3 --out-dir ./by-author
-python scripts/export_csv.py --input ./literature/papers.json --output ./references.csv
+```powershell
+.\python\python.exe .\scripts\search_papers.py --query "all:perovskite" --sources arxiv --limit 5 --out-dir ./literature
+.\python\python.exe .\scripts\search_by_author.py --author "Shoucheng Zhang" --limit 3 --out-dir ./by-author
+.\python\python.exe .\scripts\export_csv.py --input ./literature/papers.json --output ./references.csv
 ```
 
 ## 边界

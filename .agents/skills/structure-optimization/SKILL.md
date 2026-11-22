@@ -18,8 +18,10 @@ description: 对给定 CIF 用 MatterSim 计算单点能和原子力，或执行
 
 ## 你需要提供
 
-- 提供输入 CIF、MatterSim 权重路径和输出目录。可补充 `--device`、`--fmax`、`--max-steps`，需要调整晶胞时用 `--relax-cell`。
-- 初次配置按 [依赖清单](requirements.txt) 安装并查看 [模型准备与平台要求](references/model.md)。只校验 CIF 时用 [validate_cif.py](scripts/validate_cif.py)，无需加载权重。
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
+- 提供输入 CIF 和输出目录。完整包内置 MatterSim 权重。可补充 `--device`、`--fmax`、`--max-steps`，需要调整晶胞时用 `--relax-cell`。
+- 从源码安装按 [依赖清单](requirements.txt) 安装并查看 [模型准备与平台要求](references/model.md)。只校验 CIF 时用 [validate_cif.py](scripts/validate_cif.py)，无需加载权重。
 
 ## 产出
 
@@ -28,9 +30,9 @@ description: 对给定 CIF 用 MatterSim 计算单点能和原子力，或执行
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/calculate_energy.py --input ./si.cif --model-path ./models/mattersim-v1.0.0-1M.pth --out-dir ./energy
-python scripts/relax_structure.py --input ./si.cif --model-path ./models/mattersim-v1.0.0-1M.pth --fmax 0.03 --out-dir ./relaxed
+```powershell
+.\python\python.exe .\scripts\calculate_energy.py --input ./si.cif --out-dir ./energy
+.\python\python.exe .\scripts\relax_structure.py --input ./si.cif --fmax 0.03 --out-dir ./relaxed
 ```
 
 ## 边界

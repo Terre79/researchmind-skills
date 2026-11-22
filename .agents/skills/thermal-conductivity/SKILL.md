@@ -17,6 +17,8 @@ description: 用 AI4Kappa 模量模型及 Kappa-P 或 Kappa-MTP 方法预测晶�
 
 ## 你需要提供
 
+热导率完整 ZIP 尚待原版权重再分发授权。当前源码版按本节的依赖清单和模型说明配置后运行。
+
 - 提供周期 CIF、模型目录和输出目录。方法可选 `kappa_p`、`kappa_mtp` 或 `both`。
 - 模型目录包含体积模量、剪切模量检查点和元素特征表。若特征表位于其他目录，用 `--atom-init`。首次准备查看 [模型说明](references/model.md) 和 [依赖](requirements.txt)。
 

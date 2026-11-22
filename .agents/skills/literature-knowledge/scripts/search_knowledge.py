@@ -27,7 +27,7 @@ def run():
     total = store.count()
     rows = []
     if total:
-        output = store.query(query_embeddings=embedded(config, [args.query]),
+        output = store.query(query_embeddings=embedded(config, [args.query], query=True),
                              n_results=min(args.top_k, total))
         rows = [{**meta, "text": text, "distance": distance} for meta, text, distance in zip(
             output["metadatas"][0], output["documents"][0], output["distances"][0], strict=True)]

@@ -17,8 +17,10 @@ description: 用 MatterSim 力模型和 Phonopy 有限位移法计算给定 CIF 
 
 ## 你需要提供
 
-- 提供输入 CIF、MatterSim 权重路径和输出目录。可补充超胞、位移幅度和设备，默认超胞为 `2 2 2`，位移为 0.01 Å。
-- 正式计算前准备 [依赖](requirements.txt) 和 [MatterSim 权重](references/model.md)。已收敛结构可直接使用。需要预弛豫时用 `--relax-first`，或先用 [relax_structure.py](scripts/relax_structure.py) 保存结果。
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
+- 提供输入 CIF 和输出目录。完整包已包含 MatterSim 权重。可补充超胞、位移幅度和设备，默认超胞为 `2 2 2`，位移为 0.01 Å。
+- 从源码部署时准备 [依赖](requirements.txt) 和 [MatterSim 权重](references/model.md)。已收敛结构可直接使用。需要预弛豫时用 `--relax-first`，或先用 [relax_structure.py](scripts/relax_structure.py) 保存结果。
 
 ## 产出
 
@@ -27,8 +29,8 @@ description: 用 MatterSim 力模型和 Phonopy 有限位移法计算给定 CIF 
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/calculate_phonon.py --input ./si.cif --model-path ./models/mattersim-v1.0.0-1M.pth --supercell 2 2 2 --amplitude 0.01 --out-dir ./phonon
+```powershell
+.\python\python.exe .\scripts\calculate_phonon.py --input ./si.cif --supercell 2 2 2 --amplitude 0.01 --out-dir ./phonon
 ```
 
 ## 边界

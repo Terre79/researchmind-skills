@@ -17,8 +17,10 @@ description: 根据用户指定的论文生成带出处的简明报告，核对�
 
 ## 你需要提供
 
+使用 [Windows x64 CPU 完整 ZIP](https://github.com/Terre79/researchmind-skills/releases/tag/skills-win-cpu-v1)。完整包中的脚本使用同目录下的 `python/python.exe`，可从任意工作目录用绝对路径调用。源码目录部署方法见本节的依赖清单。
+
 - 提供主题、输出语言和论文清单。清单包含 `papers` 数组，每条保留真实 `paper_id`、标题和已有链接。证据来自 `content_file`、公开 `pdf_url` 或 `abstract`。相对文件路径以清单所在目录为准。
-- 需要限制论文范围时给 `--paper-id`，否则处理清单里的全部论文。准备 [依赖](requirements.txt) 和兼容服务的 `OPENAI_API_KEY`、`MODEL_USE` 及可选的 `OPENAI_BASE_URL`。
+- 需要限制论文范围时给 `--paper-id`，否则处理清单里的全部论文。完整包默认使用内置模型。从源码运行时准备 [依赖](requirements.txt) 和兼容服务的 `OPENAI_API_KEY`、`MODEL_USE` 及可选的 `OPENAI_BASE_URL`。
 
 ## 产出
 
@@ -27,8 +29,8 @@ description: 根据用户指定的论文生成带出处的简明报告，核对�
 
 在本 Skill 目录执行：
 
-```bash
-python scripts/write_report.py --papers ./evidence/papers.json --topic "层状钙钛矿的电荷有序证据" --language Chinese --out-dir ./report
+```powershell
+.\python\python.exe .\scripts\write_report.py --papers ./evidence/papers.json --topic "层状钙钛矿的电荷有序证据" --language Chinese --out-dir ./report
 ```
 
 ## 边界
