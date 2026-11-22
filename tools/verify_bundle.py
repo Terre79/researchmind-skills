@@ -98,7 +98,7 @@ def science(name, run, workspace, fixtures):
     return {"methods": 2, "temperature_K": 300}
 
 
-def literature(name, run, workspace, fixtures):
+def literature(name, run, workspace, fixtures, *, online=False):
     output = workspace / "result"
     pdf = fixtures / "acceptance-paper.pdf"
     paper_id = "cond-mat/0211520v2"
@@ -108,7 +108,13 @@ def literature(name, run, workspace, fixtures):
                    "--max-tokens", 400, "--out-dir", output)
         assert imported["paper_count"] == 1 and Path(imported["csv"]).is_file()
         assert Path(plan["report"]).stat().st_size > 100
-        return {"imported": 1, "plan_model": plan["inference"]["model"]}
+        result = {"imported": 1, "plan_model": plan["inference"]["model"]}
+        if online:
+            search = run("search_papers.py", "--query", "id:cond-mat/0211520",
+                         "--sources", "arxiv", "--limit", 1, "--out-dir", output / "arxiv")
+            assert search["paper_count"] == 1
+            result["arxiv_records"] = search["paper_count"]
+        return result
     papers = workspace / "papers.json"
     papers.write_text(json.dumps({"papers": [
         {"paper_id": paper_id, "title": "Two-dimensional charge order in layered 2-1-4 perovskite oxides",
@@ -156,14 +162,19 @@ def main():
     with TemporaryDirectory(prefix="验证 Skill ", dir=args.scratch) as temporary:
         workspace = Path(temporary).resolve()
         skill, name = extract(args.archive.resolve(), workspace)
-        if (name == "materials-search") != args.online:
-            parser.error("Only materials-search needs --online")
+        if name == "materials-search" and not args.online:
+            parser.error("materials-search needs --online")
+        if args.online and name not in {"materials-search", "literature-search"}:
+            parser.error("--online applies only to the two search bundles")
 
         def run(entry, *values):
             return call(skill, workspace, args.online, entry, *values)
 
-        workflow = literature if name.startswith(("literature-", "paper-", "research-")) else science
-        result = workflow(name, run, workspace, args.fixtures.resolve())
+        fixtures = args.fixtures.resolve()
+        if name.startswith(("literature-", "paper-", "research-")):
+            result = literature(name, run, workspace, fixtures, online=args.online)
+        else:
+            result = science(name, run, workspace, fixtures)
         print(json.dumps({"skill": name, "archive_sha256": digest(args.archive),
                           "details": result}, ensure_ascii=True))
 
