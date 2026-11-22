@@ -29,4 +29,4 @@ python tools/verify_bundle.py --archive .\dist\crystal-generation-win-x64-cpu-v1
 
 ## 已知外部条件
 
-材料数据库和远程文献检索需要网络及服务可用，账户型 API 仍需自己的凭据。包内本地模型不发送文本到远程服务。需主动改用远程时，设 `RM_CHAT_BACKEND=remote` 或 `RM_EMBED_BACKEND=remote` 并配置服务。CPU 版需要 x64 硬件，具体支持范围以发布验收环境为准。
+材料数据库和远程文献检索需要网络及服务可用，账户型 API 仍需自己的凭据。包内本地模型不发送文本到远程服务。需主动改用远程时，设 `RM_CHAT_BACKEND=remote` 或 `RM_EMBED_BACKEND=remote` 并配置服务。CPU 版需要 x64 硬件。现有 Windows 实测机已具备 Microsoft Visual C++ v14 系统库。部分原生组件会加载 `msvcp140.dll` 或 `msvcp140_codecvt_ids.dll`，完整包当前没有附带这两份系统 DLL。缺失时由 Windows 环境提供；没有该系统组件的干净虚拟机以及 Agent 安装端到端验收待补充。因此发布标为预览版。
